@@ -15,7 +15,7 @@ def display_toto_list():
             print(exc)
     output = template('./templates/todolist', task_list = task_list)
     return output
-    
+
 @error(403)
 def error403(code):
     return 'Error 403 !'
