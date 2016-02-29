@@ -25,13 +25,43 @@
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
     <![endif]-->
 
+<script>
+	$(document).ready(function() {
+		// Empty form in modal when modal closes
+		$('.modal').on('hidden.bs.modal', function(){
+		    $(this).find('form')[0].reset();
+		});
+		// Handle form submission with AJAX
+		$("#newTaskForm").submit(function(e) {
+			// Prevent default submit form action
+			e.preventDefault();
+			// Submit form through AJAX
+			var formData = JSON.stringify($("#newTaskForm").serializeArray());
+			$.ajax({
+				type : "POST",
+				data : $("#newTaskForm").serialize(),
+				dataType : 'json',
+				contentType : 'application/json; charset=utf-8'
+			}).done(function(response) {
+				// Close modal
+				$('#newTaskPopup').modal('toggle');
+				// Add task to tasklist
+				var title = response['new_task']['Title'];
+				var description = response['new_task']['Description'];
+				$('#taskTable tbody').append('<tr><td>'+title+'</td><td>'+description+'</td></tr>');
+			}).fail(function(xhr, status, message) {
+				// handle a failure response
+			});
+		});
+	});
+</script>
 </head>
 <body>
 
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newTaskForm">New Task</button>
+    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newTaskPopup">New Task</button>
 
-    <table class="table table-striped">
+    <table id="taskTable" class="table table-striped">
         <thead>
             <tr>
                 <th>Title</th>
@@ -49,7 +79,7 @@
     </table>
     <!-- New task form -->
     <!-- Modal -->
-    <div class="modal fade" id="newTaskForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="newTaskPopup" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -59,20 +89,18 @@
                     <h4 class="modal-title" id="myModalLabel">New Task Definition</h4>
                 </div>
                 <div class="modal-body">
-                    <form>
+                    <form id="newTaskForm">
                         <fieldset class="form-group">
                             <label for="taskTitle">Task title</label>
-                            <input type="text" class="form-control" id="taskTitle" placeholder="Enter task title">
+                            <input type="text" class="form-control" name="taskTitle" placeholder="Enter task title">
                         </fieldset>
                         <fieldset class="form-group">
                             <label for="taskDescription">Task description</label>
-                            <textarea class="form-control" id="taskDescription" rows="3"></textarea>
+                            <textarea class="form-control" name="taskDescription" rows="3"></textarea>
                         </fieldset>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Create task</button>
                     </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Create task</button>
                 </div>
             </div>
         </div>
