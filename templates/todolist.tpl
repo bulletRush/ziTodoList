@@ -46,9 +46,10 @@
 				// Close modal
 				$('#newTaskPopup').modal('toggle');
 				// Add task to tasklist
+				var id = $('#taskTable tr').length-1;
 				var title = response['new_task']['Title'];
 				var description = response['new_task']['Description'];
-				$('#taskTable tbody').append('<tr><td>'+title+'</td><td>'+description+'</td></tr>');
+				$('#taskTable tbody').append('<tr><td>'+id+'</td><td>'+title+'</td><td>'+description+'</td>'+'<td><button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</button></td>'+'</tr>');
 			}).fail(function(xhr, status, message) {
 				// handle a failure response
 			});
@@ -63,16 +64,24 @@
 
     <table id="taskTable" class="table table-striped">
         <thead>
-            <tr>
+            <tr>                
+                <th>#</th>
                 <th>Title</th>
                 <th>Description</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
-            %for task in task_list:
+            %for id,task in enumerate(task_list):
             <tr>
+                <td>{{id}}</td>
                 <td>{{task['Title']}}</td>
                 <td>{{task['Description']}}</td>
+                <td>
+                    <button type="button" class="btn btn-primary">
+                        <span class="glyphicon glyphicon-pencil"></span> Edit
+                    </button>
+                </td>                
             </tr>
             %end
         </tbody>
