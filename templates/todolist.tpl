@@ -29,8 +29,9 @@
 	$(document).ready(function() {
 		// Empty form in modal when modal closes
 		$('.modal').on('hidden.bs.modal', function(){
-		    $(this).find('form')[0].reset();
+		    $(this).find('form')[0].reset();		    
 		});
+		
 		// Handle form submission with AJAX
 		$("#newTaskForm").submit(function(e) {
 			// Prevent default submit form action
@@ -39,20 +40,53 @@
 			var formData = JSON.stringify($("#newTaskForm").serializeArray());
 			$.ajax({
 				type : "POST",
+				url : "setTask",
 				data : $("#newTaskForm").serialize(),
 				dataType : 'json',
 				contentType : 'application/json; charset=utf-8'
 			}).done(function(response) {
+				var id = $("[name='taskId']").val();
 				// Close modal
 				$('#newTaskPopup').modal('toggle');
 				// Add task to tasklist
-				var id = $('#taskTable tr').length-1;
 				var title = response['new_task']['Title'];
 				var description = response['new_task']['Description'];
-				$('#taskTable tbody').append('<tr><td>'+id+'</td><td>'+title+'</td><td>'+description+'</td>'+'<td><button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</button></td>'+'</tr>');
-			}).fail(function(xhr, status, message) {
-				// handle a failure response
+				// Define task
+				var task = '<tr><td>'+id+'</td><td>'+title+'</td><td>'+description+'</td>'+'<td><button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</button></td>'+'</tr>';
+				if (id == $('#taskTable tr').length-1)
+				    // New task
+					$('#taskTable tbody').append(task);
+				else
+					// Existing task
+					$('#taskTable tbody tr').eq(id).replaceWith(task)
+			    // Attach event to button
 			});
+        });
+		// Handle new task event
+		$("#newTaskBtn").on('click', function(e){
+			// Set id of new task
+			$("[name='taskId']").val($('#taskTable tr').length-1);
+			// Popup form
+			$('#newTaskPopup').modal('show');
+		});
+		// Handle edit event
+		$("table tr button").on('click', function(e){
+            var taskId = $(this).closest('tr').index();
+            // Retrieve task details
+            $.ajax({
+                type : "GET",
+                url: "getTask",
+                data : {taskId: taskId},
+                dataType : 'json',
+                contentType : 'application/json; charset=utf-8'
+            }).done(function(response) {
+            	// Fill form with those informations
+            	$("[name='taskId']").val(taskId);
+            	$("[name='taskTitle']").val(response['task']['Title']);
+            	$("[name='taskDescription']").text(response['task']['Description']);
+            	// Popup task form
+            	$('#newTaskPopup').modal('show');
+            });
 		});
 	});
 </script>
@@ -60,7 +94,7 @@
 <body>
 
     <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#newTaskPopup">New Task</button>
+    <button id="newTaskBtn" type="button" class="btn btn-primary">New Task</button>
 
     <table id="taskTable" class="table table-striped">
         <thead>
@@ -100,6 +134,9 @@
                 <div class="modal-body">
                     <form id="newTaskForm">
                         <fieldset class="form-group">
+                            <input type="hidden" class="form-control" name="taskId">
+                        </fieldset>
+                        <fieldset class="form-group">
                             <label for="taskTitle">Task title</label>
                             <input type="text" class="form-control" name="taskTitle" placeholder="Enter task title">
                         </fieldset>
@@ -108,7 +145,7 @@
                             <textarea class="form-control" name="taskDescription" rows="3"></textarea>
                         </fieldset>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Create task</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>
             </div>

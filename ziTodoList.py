@@ -12,15 +12,26 @@ def display_toto_list():
     output = template('./templates/todolist', task_list = task_list)
     return output
 
-@route('/todolist', method='POST')
-def new_task():
-    # Insert new task and dump
-    new_task = {'Title':request.POST['taskTitle'],'Description':request.POST['taskDescription']}
+@route('/setTask', method='POST')
+def set_task():
+    task_id = int(request.POST['taskId'])
     task_list = load_tasklist()
-    task_list += [new_task]
+    # Build task from request
+    new_task = {'Title':request.POST['taskTitle'],'Description':request.POST['taskDescription']}
+    if task_id >= len(task_list):
+        # New task to insert
+        task_list += [new_task]
+    else:
+        # Existing task to edit
+        task_list[task_id] = new_task
     dump_tasklist(task_list)
     return json.dumps({'new_task':new_task});
 
+@route('/getTask',method='GET')
+def get_task():
+    task_list = load_tasklist()
+    return json.dumps({'task':task_list[int(request.GET['taskId'])]});
+    
 def load_tasklist():
     with open("./data/todolist.yaml", 'r') as stream:
         try:
