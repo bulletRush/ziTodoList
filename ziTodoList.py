@@ -1,15 +1,20 @@
-import yaml
+import json
+import os.path
 
 from bottle import route, run, debug, template, error, request
-import json
+import yaml
 
+
+source_dir = os.path.dirname(__file__)
 
 # only needed when you run Bottle on mod_wsgi
+from bottle import default_app
+
 @route('/todolist')
 def display_toto_list():
     # Load YAML database
     task_list = load_tasklist()
-    output = template('./templates/todolist', task_list = task_list)
+    output = template(os.path.join(source_dir,'templates/todolist'), task_list = task_list)
     return output
 
 @route('/setTask', method='POST')
@@ -33,7 +38,7 @@ def get_task():
     return json.dumps({'task':task_list[int(request.GET['taskId'])]});
     
 def load_tasklist():
-    with open("./data/todolist.yaml", 'r') as stream:
+    with open(os.path.join(source_dir,"data/todolist.yaml"), 'r') as stream:
         try:
             task_list = yaml.load(stream)
         except yaml.YAMLError as exc:
@@ -41,7 +46,7 @@ def load_tasklist():
     return task_list
 
 def dump_tasklist(data):
-    dump_file = open("./data/todolist.yaml", 'w')
+    dump_file = open(os.path.join(source_dir,"./data/todolist.yaml"), 'w')
     yaml.dump(data,dump_file)
 
 @error(403)
@@ -52,5 +57,4 @@ def error403(code):
 def error404(code):
     return 'Error 404 !'
 
-debug(True)
-run(reloader=True)
+application = default_app()

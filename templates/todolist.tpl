@@ -26,11 +26,16 @@
     <![endif]-->
 
 <script>
+    function bindEditButtons(node) {
+        return p1 * p2;              // The function returns the product of p1 and p2
+    }
 	$(document).ready(function() {
 		// Empty form in modal when modal closes
 		$('.modal').on('hidden.bs.modal', function(){
 		    $(this).find('form')[0].reset();		    
 		});
+		// Bind all edit buttons
+		bindEditButtons();
 		
 		// Handle form submission with AJAX
 		$("#newTaskForm").submit(function(e) {
@@ -60,6 +65,7 @@
 					// Existing task
 					$('#taskTable tbody tr').eq(id).replaceWith(task)
 			    // Attach event to button
+	            bindEditButtons();
 			});
         });
 		// Handle new task event
@@ -69,8 +75,13 @@
 			// Popup form
 			$('#newTaskPopup').modal('show');
 		});
-		// Handle edit event
-		$("table tr button").on('click', function(e){
+
+		
+	});
+
+	// Handle edit event
+    function bindEditButtons(){
+        $("table tr button").on('click', function(e){
             var taskId = $(this).closest('tr').index();
             // Retrieve task details
             $.ajax({
@@ -80,15 +91,15 @@
                 dataType : 'json',
                 contentType : 'application/json; charset=utf-8'
             }).done(function(response) {
-            	// Fill form with those informations
-            	$("[name='taskId']").val(taskId);
-            	$("[name='taskTitle']").val(response['task']['Title']);
-            	$("[name='taskDescription']").text(response['task']['Description']);
-            	// Popup task form
-            	$('#newTaskPopup').modal('show');
+                // Fill form with those informations
+                $("[name='taskId']").val(taskId);
+                $("[name='taskTitle']").val(response['task']['Title']);
+                $("[name='taskDescription']").text(response['task']['Description']);
+                // Popup task form
+                $('#newTaskPopup').modal('show');
             });
-		});
-	});
+        });
+    }
 </script>
 </head>
 <body>
