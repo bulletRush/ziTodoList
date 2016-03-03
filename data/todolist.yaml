@@ -1,4 +1,2 @@
-- Title : Task 1
-  Description : Description of task 1
-- Title: Task 2
-  Description : Description of task 2
+1: {Description: Description of task 1, Title: Task 1}
+2: {Description: Description of task 2, Title: Task 2}

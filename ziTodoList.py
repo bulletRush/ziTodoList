@@ -23,12 +23,7 @@ def set_task():
     task_list = load_tasklist()
     # Build task from request
     new_task = {'Title':request.POST['taskTitle'],'Description':request.POST['taskDescription']}
-    if task_id >= len(task_list):
-        # New task to insert
-        task_list += [new_task]
-    else:
-        # Existing task to edit
-        task_list[task_id] = new_task
+    task_list[task_id] = new_task
     dump_tasklist(task_list)
     return json.dumps({'new_task':new_task});
 
@@ -36,6 +31,19 @@ def set_task():
 def get_task():
     task_list = load_tasklist()
     return json.dumps({'task':task_list[int(request.GET['taskId'])]});
+
+@route('/getNewId',method='GET')
+def get_id():
+    task_list = load_tasklist()
+    new_id = max(task_list.keys())+1
+    return json.dumps(new_id);
+
+@route('/removeTask',method='POST')
+def del_task():
+    task_list = load_tasklist()
+    task_id = int(request.POST['taskId'])
+    del task_list[task_id]
+    dump_tasklist(task_list)
     
 def load_tasklist():
     with open(os.path.join(source_dir,"data/todolist.yaml"), 'r') as stream:

@@ -26,16 +26,13 @@
     <![endif]-->
 
 <script>
-    function bindEditButtons(node) {
-        return p1 * p2;              // The function returns the product of p1 and p2
-    }
 	$(document).ready(function() {
 		// Empty form in modal when modal closes
 		$('.modal').on('hidden.bs.modal', function(){
 		    $(this).find('form')[0].reset();		    
 		});
 		// Bind all edit buttons
-		bindEditButtons();
+		bindAllButtons();
 		
 		// Handle form submission with AJAX
 		$("#newTaskForm").submit(function(e) {
@@ -57,21 +54,27 @@
 				var title = response['new_task']['Title'];
 				var description = response['new_task']['Description'];
 				// Define task
-				var task = '<tr><td>'+id+'</td><td>'+title+'</td><td>'+description+'</td>'+'<td><button type="button" class="btn btn-primary"><span class="glyphicon glyphicon-pencil"></span> Edit</button></td>'+'</tr>';
-				if (id == $('#taskTable tr').length-1)
-				    // New task
-					$('#taskTable tbody').append(task);
+				var task = '<tr id="'+id+'"><td>'+id+'</td><td>'+title+'</td><td>'+description+'</td>'+'<td><button type="button" class="btn btn-primary editBtn"><span class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-danger delBtn"><span class="glyphicon glyphicon-remove"></span></button></td>'+'</tr>';
+				if ($('#'+id).length)
+                    // Existing task
+                    $('#'+id).replaceWith(task)				    					
 				else
-					// Existing task
-					$('#taskTable tbody tr').eq(id).replaceWith(task)
+					// New task
+					$('#taskTable tbody').append(task);
 			    // Attach event to button
-	            bindEditButtons();
+	            bindAllButtons();
 			});
         });
 		// Handle new task event
 		$("#newTaskBtn").on('click', function(e){
 			// Set id of new task
-			$("[name='taskId']").val($('#taskTable tr').length-1);
+			$.ajax({
+				type: "GET",
+				url: "getNewId"
+			}).done(function(response){
+				var newId = response;
+				$("[name='taskId']").val(newId);
+			});
 			// Popup form
 			$('#newTaskPopup').modal('show');
 		});
@@ -79,10 +82,15 @@
 		
 	});
 
+	// Bind all buttons
+	function bindAllButtons(){
+		bindEditButtons();
+		bindDelButtons();	
+    }
 	// Handle edit event
     function bindEditButtons(){
         $(".editBtn").on('click', function(e){
-            var taskId = $(this).closest('tr').index();
+            var taskId = $(this).closest('tr').attr("id");
             // Retrieve task details
             $.ajax({
                 type : "GET",
@@ -97,6 +105,22 @@
                 $("[name='taskDescription']").text(response['task']['Description']);
                 // Popup task form
                 $('#newTaskPopup').modal('show');
+            });
+        });
+    }
+	
+	// Handle remove event
+	   // Handle edit event
+    function bindDelButtons(){
+        $(".delBtn").on('click', function(e){
+            var taskId = $(this).closest('tr').attr("id");
+            // Retrieve task details
+            $.ajax({
+                type : "POST",
+                url: "removeTask",
+                data : {taskId: taskId},
+            }).done(function(response) {
+            	$('#'+taskId).remove();
             });
         });
     }
@@ -117,8 +141,8 @@
             </tr>
         </thead>
         <tbody>
-            %for id,task in enumerate(task_list):
-            <tr>
+            %for id, task in task_list.iteritems():
+            <tr id="{{id}}">
                 <td>{{id}}</td>
                 <td>{{task['Title']}}</td>
                 <td>{{task['Description']}}</td>
