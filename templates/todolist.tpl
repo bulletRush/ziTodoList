@@ -81,7 +81,7 @@
 
 	// Handle edit event
     function bindEditButtons(){
-        $("table tr button").on('click', function(e){
+        $(".editBtn").on('click', function(e){
             var taskId = $(this).closest('tr').index();
             // Retrieve task details
             $.ajax({
@@ -105,7 +105,7 @@
 <body>
 
     <!-- Button trigger modal -->
-    <button id="newTaskBtn" type="button" class="btn btn-primary">New Task</button>
+    <button id="newTaskBtn" type="button" class="btn btn-primary"><span class="glyphicon glyphicon glyphicon-plus"></span> New Task</button>
 
     <table id="taskTable" class="table table-striped">
         <thead>
@@ -123,9 +123,8 @@
                 <td>{{task['Title']}}</td>
                 <td>{{task['Description']}}</td>
                 <td>
-                    <button type="button" class="btn btn-primary">
-                        <span class="glyphicon glyphicon-pencil"></span> Edit
-                    </button>
+                    <button type="button" class="btn btn-primary editBtn"><span class="glyphicon glyphicon-pencil"></span></button>
+                    <button type="button" class="btn btn-danger delBtn"><span class="glyphicon glyphicon-remove"></span></button>                    
                 </td>                
             </tr>
             %end
