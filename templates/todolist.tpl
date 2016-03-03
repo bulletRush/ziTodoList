@@ -29,7 +29,8 @@
 	$(document).ready(function() {
 		// Empty form in modal when modal closes
 		$('.modal').on('hidden.bs.modal', function(){
-		    $(this).find('form')[0].reset();		    
+		    $(this).find('form')[0].reset();
+		    $("[name='taskDescription']").val("");
 		});
 		// Bind all edit buttons
 		bindAllButtons();
