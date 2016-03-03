@@ -35,7 +35,10 @@ def get_task():
 @route('/getNewId',method='GET')
 def get_id():
     task_list = load_tasklist()
-    new_id = max(task_list.keys())+1
+    if task_list: 
+        new_id = max(task_list.keys())+1
+    else:
+        new_id = 1
     return json.dumps(new_id);
 
 @route('/removeTask',method='POST')
