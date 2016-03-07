@@ -90,6 +90,7 @@
     }
 	// Handle edit event
     function bindEditButtons(){
+    	$(".editBtn").unbind('click');
         $(".editBtn").on('click', function(e){
             var taskId = $(this).closest('tr').attr("id");
             // Retrieve task details
@@ -113,6 +114,7 @@
 	// Handle remove event
 	   // Handle edit event
     function bindDelButtons(){
+    	$(".delBtn").unbind('click');
         $(".delBtn").on('click', function(e){
             var taskId = $(this).closest('tr').attr("id");
             // Retrieve task details
