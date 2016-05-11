@@ -18,6 +18,9 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
+<link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+<script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+
 <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 <!--[if lt IE 9]>
@@ -31,9 +34,17 @@
 		$('.modal').on('hidden.bs.modal', function(){
 		    $(this).find('form')[0].reset();
 		    $("[name='taskDescription']").text("");
+		    $("[name='taskStatus']").bootstrapToggle('on');
 		});
+		// format task depending on status
+		formatTaskUponStatus();
 		// Bind all edit buttons
 		bindAllButtons();
+        // Define filters and apply
+        applyFilterStatus();
+        $('#filterStatus').change(function() {
+            applyFilterStatus();
+        });
 		
 		// Handle form submission with AJAX
 		$("#newTaskForm").submit(function(e) {
@@ -55,15 +66,19 @@
 				var title = response['new_task']['Title'];
 				var description = response['new_task']['Description'];
 				// Define task
-				var task = '<tr id="'+id+'"><td>'+id+'</td><td>'+title+'</td><td>'+description+'</td>'+'<td><button type="button" class="btn btn-primary editBtn"><span class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-danger delBtn"><span class="glyphicon glyphicon-remove"></span></button></td>'+'</tr>';
+				var task = '<tr data-taskStatus="'+response['new_task']['Status']+'" id="'+id+'"><td>'+id+'</td><td>'+title+'</td><td>'+description+'</td>'+'<td><button type="button" class="btn btn-primary editBtn"><span class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-danger delBtn"><span class="glyphicon glyphicon-remove"></span></button></td>'+'</tr>';
 				if ($('#'+id).length)
                     // Existing task
-                    $('#'+id).replaceWith(task)				    					
+                    $('#'+id).replaceWith(task);				    					
 				else
 					// New task
 					$('#taskTable tbody').append(task);
 			    // Attach event to button
 	            bindAllButtons();
+			    // Grey all done tasks
+			    formatTaskUponStatus();
+			    // Apply filters
+			    applyFilterStatus();
 			});
         });
 		// Handle new task event
@@ -83,11 +98,25 @@
 		
 	});
 
+    function formatTaskUponStatus(){
+    	$("tr[data-taskStatus='Todo']").css('font-style', 'normal').css("text-decoration", "none");
+        $("tr[data-taskStatus='Done']").css('font-style', 'italic').css("text-decoration", "line-through");
+    }
+    
+    function applyFilterStatus(){
+        if ($('#filterStatus').prop('checked')){
+            $("tr[data-taskStatus='Done']").show();
+        }else{
+            $("tr[data-taskStatus='Done']").hide();
+        }
+    }
+    
 	// Bind all buttons
 	function bindAllButtons(){
 		bindEditButtons();
 		bindDelButtons();	
     }
+	
 	// Handle edit event
     function bindEditButtons(){
     	$(".editBtn").unbind('click');
@@ -105,6 +134,12 @@
                 $("[name='taskId']").val(taskId);
                 $("[name='taskTitle']").val(response['task']['Title']);
                 $("[name='taskDescription']").text(response['task']['Description']);
+                if (response['task']['Status'] == "Todo") {
+                	$("[name='taskStatus']").bootstrapToggle('on');
+                } else {
+                	$("[name='taskStatus']").bootstrapToggle('off')
+                }
+                $("[name='taskStatus']").prop("checked", response['task']['Status'] == "Todo")
                 // Popup task form
                 $('#newTaskPopup').modal('show');
             });
@@ -132,7 +167,10 @@
 
     <!-- Button trigger modal -->
     <button id="newTaskBtn" type="button" class="btn btn-primary"><span class="glyphicon glyphicon glyphicon-plus"></span> New Task</button>
-
+    <!-- Filters -->
+    <input id="filterStatus" checked data-toggle="toggle" data-on="Show<br>Done" data-off="Hide<br>Done" data-onstyle="primary" type="checkbox"> 
+    
+    <!-- Task table -->
     <table id="taskTable" class="table table-striped">
         <thead>
             <tr>                
@@ -144,7 +182,7 @@
         </thead>
         <tbody>
             %for id, task in task_list.iteritems():
-            <tr id="{{id}}">
+            <tr data-taskStatus="{{task['Status']}}" id="{{id}}">
                 <td>{{id}}</td>
                 <td>{{task['Title']}}</td>
                 <td>{{task['Description']}}</td>
@@ -179,6 +217,9 @@
                         <fieldset class="form-group">
                             <label for="taskDescription">Task description</label>
                             <textarea class="form-control" name="taskDescription" rows="3"></textarea>
+                        </fieldset>
+                        <fieldset class="form-group">
+                            <input name="taskStatus" checked data-toggle="toggle" data-width="100" data-on="ToDo" data-off="Done" data-onstyle="primary" data-offstyle="success" type="checkbox" value="Todo"> 
                         </fieldset>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Submit</button>

@@ -11,7 +11,7 @@ source_dir = os.path.dirname(__file__)
 from bottle import default_app
 
 @route('/todolist')
-def display_toto_list():
+def display_todo_list():
     # Load YAML database
     task_list = load_tasklist()
     output = template(os.path.join(source_dir,'templates/todolist'), task_list = task_list)
@@ -21,8 +21,15 @@ def display_toto_list():
 def set_task():
     task_id = int(request.POST['taskId'])
     task_list = load_tasklist()
+    # Interpret answer
+    if "taskStatus" in request.POST.keys():
+        status = "Todo"
+    else:
+        status = "Done"
     # Build task from request
-    new_task = {'Title':request.POST['taskTitle'],'Description':request.POST['taskDescription']}
+    new_task = {'Title':request.POST['taskTitle'],
+                'Description':request.POST['taskDescription'],
+                'Status':status}
     task_list[task_id] = new_task
     dump_tasklist(task_list)
     return json.dumps({'new_task':new_task});
