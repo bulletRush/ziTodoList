@@ -162,18 +162,44 @@
         });
     }
 </script>
+<style>
+body {
+	padding-top: 80px;
+}
+</style>
 </head>
-<body>
 
-    <!-- Button trigger modal -->
-    <button id="newTaskBtn" type="button" class="btn btn-primary"><span class="glyphicon glyphicon glyphicon-plus"></span> New Task</button>
-    <!-- Filters -->
-    <input id="filterStatus" checked data-toggle="toggle" data-on="Show<br>Done" data-off="Hide<br>Done" data-onstyle="primary" type="checkbox"> 
-    
+<body>
+    <nav style="margin-bottom: 100px;" class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">            
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">ziTodoList</a>
+            </div>
+                                   
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav pull-right">
+                    <li><a> <!-- Button trigger modal -->
+                            <button id="newTaskBtn" type="button" class="btn btn-primary">
+                                <span class="glyphicon glyphicon glyphicon-plus"></span> New Task
+                            </button>
+                    </a></li>
+                    <li><a> <!-- Filters --> <input id="filterStatus" checked data-toggle="toggle" data-on="Show Done" data-off="Hide Done" data-onstyle="primary" type="checkbox">
+                    </a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
     <!-- Task table -->
     <table id="taskTable" class="table table-striped">
         <thead>
-            <tr>                
+            <tr>
                 <th>#</th>
                 <th>Title</th>
                 <th>Description</th>
@@ -187,9 +213,13 @@
                 <td>{{task['Title']}}</td>
                 <td>{{task['Description']}}</td>
                 <td>
-                    <button type="button" class="btn btn-primary editBtn"><span class="glyphicon glyphicon-pencil"></span></button>
-                    <button type="button" class="btn btn-danger delBtn"><span class="glyphicon glyphicon-remove"></span></button>                    
-                </td>                
+                    <button type="button" class="btn btn-primary editBtn">
+                        <span class="glyphicon glyphicon-pencil"></span>
+                    </button>
+                    <button type="button" class="btn btn-danger delBtn">
+                        <span class="glyphicon glyphicon-remove"></span>
+                    </button>
+                </td>
             </tr>
             %end
         </tbody>
@@ -219,7 +249,7 @@
                             <textarea class="form-control" name="taskDescription" rows="3"></textarea>
                         </fieldset>
                         <fieldset class="form-group">
-                            <input name="taskStatus" checked data-toggle="toggle" data-width="100" data-on="ToDo" data-off="Done" data-onstyle="primary" data-offstyle="success" type="checkbox" value="Todo"> 
+                            <input name="taskStatus" checked data-toggle="toggle" data-width="100" data-on="ToDo" data-off="Done" data-onstyle="primary" data-offstyle="success" type="checkbox" value="Todo">
                         </fieldset>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Submit</button>
