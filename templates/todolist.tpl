@@ -9,6 +9,8 @@
 <!-- jQuery  - Minified version -->
 <script src="//code.jquery.com/jquery-2.2.1.js"></script>
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  
 
 <!-- Bootstrap from CDN -->
 <!-- Latest compiled and minified CSS -->
@@ -18,6 +20,7 @@
 <!-- Latest compiled and minified JavaScript -->
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
 
+<!-- For toggle with sliding effects -->
 <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
 <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
@@ -45,6 +48,10 @@
         $('#filterStatus').change(function() {
             applyFilterStatus();
         });
+        // Init date picker
+        $(function() {
+       	    $("[name='taskDueDate']").datepicker({numberOfMonths: 2, dateFormat: "dd/mm/yy", showWeek: true});
+        });
 		
 		// Handle form submission with AJAX
 		$("#newTaskForm").submit(function(e) {
@@ -65,8 +72,9 @@
 				// Add task to tasklist
 				var title = response['new_task']['Title'];
 				var description = response['new_task']['Description'];
+				var dueDate = response['new_task']['Due Date'];
 				// Define task
-				var task = '<tr data-taskStatus="'+response['new_task']['Status']+'" id="'+id+'"><td>'+id+'</td><td>'+title+'</td><td>'+description+'</td>'+'<td><button type="button" class="btn btn-primary editBtn"><span class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-danger delBtn"><span class="glyphicon glyphicon-remove"></span></button></td>'+'</tr>';
+				var task = '<tr data-taskStatus="'+response['new_task']['Status']+'" id="'+id+'"><td>'+id+'</td><td>'+title+'</td><td>'+description+'</td><td>'+dueDate+'</td>'+'<td><button type="button" class="btn btn-primary editBtn"><span class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-danger delBtn"><span class="glyphicon glyphicon-remove"></span></button></td>'+'</tr>';
 				if ($('#'+id).length)
                     // Existing task
                     $('#'+id).replaceWith(task);				    					
@@ -134,6 +142,7 @@
                 $("[name='taskId']").val(taskId);
                 $("[name='taskTitle']").val(response['task']['Title']);
                 $("[name='taskDescription']").text(response['task']['Description']);
+                $("[name='taskDueDate']").val(response['task']['Due Date']);
                 if (response['task']['Status'] == "Todo") {
                 	$("[name='taskStatus']").bootstrapToggle('on');
                 } else {
@@ -203,6 +212,7 @@ body {
                 <th>#</th>
                 <th>Title</th>
                 <th>Description</th>
+                <th>Due Date</th>
                 <th></th>
             </tr>
         </thead>
@@ -212,6 +222,7 @@ body {
                 <td>{{id}}</td>
                 <td>{{task['Title']}}</td>
                 <td>{{task['Description']}}</td>
+                <td>{{task['Due Date']}}</td>               
                 <td>
                     <button type="button" class="btn btn-primary editBtn">
                         <span class="glyphicon glyphicon-pencil"></span>
@@ -249,7 +260,14 @@ body {
                             <textarea class="form-control" name="taskDescription" rows="3"></textarea>
                         </fieldset>
                         <fieldset class="form-group">
-                            <input name="taskStatus" checked data-toggle="toggle" data-width="100" data-on="ToDo" data-off="Done" data-onstyle="primary" data-offstyle="success" type="checkbox" value="Todo">
+                            <span style="float:left">
+                                <label for="taskDueDate">Due date</label>
+                                <input type="text" name="taskDueDate">
+                            </span>        
+                             <span style="float:right">                   
+                                <label for="taskStatus">Status</label>
+                                <input name="taskStatus" checked data-toggle="toggle" data-width="100" data-on="ToDo" data-off="Done" data-onstyle="primary" data-offstyle="success" type="checkbox" value="Todo">
+                            </span>
                         </fieldset>
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Submit</button>

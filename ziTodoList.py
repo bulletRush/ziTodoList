@@ -11,6 +11,7 @@ source_dir = os.path.dirname(__file__)
 from bottle import default_app
 
 @route('/todolist')
+
 def display_todo_list():
     # Load YAML database
     task_list = load_tasklist()
@@ -25,11 +26,12 @@ def set_task():
     if "taskStatus" in request.POST.keys():
         status = "Todo"
     else:
-        status = "Done"
+        status = "Done"    
     # Build task from request
     new_task = {'Title':request.POST['taskTitle'],
                 'Description':request.POST['taskDescription'],
-                'Status':status}
+                'Status':status,
+                'Due Date':request.POST['taskDueDate']}
     task_list[task_id] = new_task
     dump_tasklist(task_list)
     return json.dumps({'new_task':new_task});
@@ -65,7 +67,7 @@ def load_tasklist():
 
 def dump_tasklist(data):
     dump_file = open(os.path.join(source_dir,"./data/todolist.yaml"), 'w')
-    yaml.dump(data,dump_file)
+    yaml.dump(data,dump_file, width = float("inf"))
 
 @error(403)
 def error403(code):
