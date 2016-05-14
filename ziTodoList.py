@@ -10,8 +10,12 @@ source_dir = os.path.dirname(__file__)
 # only needed when you run Bottle on mod_wsgi
 from bottle import default_app
 
-@route('/todolist')
+@route('/admin')
+def admin():
+    output = template(os.path.join(source_dir,'templates/admin'))
+    return output
 
+@route('/todolist')
 def display_todo_list():
     # Load YAML database
     task_list = load_tasklist()

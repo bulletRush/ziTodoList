@@ -180,7 +180,7 @@ body {
 
 <body>
     <nav style="margin-bottom: 100px;" class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container-fluid">            
+        <div class="container-fluid">
             <!-- Brand and toggle get grouped for better mobile display -->
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
@@ -188,17 +188,35 @@ body {
                 </button>
                 <a class="navbar-brand" href="#">ziTodoList</a>
             </div>
-                                   
-            <!-- Collect the nav links, forms, and other content for toggling -->
+
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav pull-left">
+                    <li>
+                        <div class='navbar-btn'>
+                            <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                GoTo <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu">
+                                <li><a href="todolist">Todo List</a></li>
+                                <li><a href="crm">CRM</a></li>
+                                <li role="separator" class="divider"></li>
+                                <li><a href="admin">Admin</a></li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+
                 <ul class="nav navbar-nav pull-right">
-                    <li><a> <!-- Button trigger modal -->
+                    <li>
+                        <div class='navbar-btn'>
+                            <!-- Button trigger modal -->
                             <button id="newTaskBtn" type="button" class="btn btn-primary">
                                 <span class="glyphicon glyphicon glyphicon-plus"></span> New Task
                             </button>
-                    </a></li>
-                    <li><a> <!-- Filters --> <input id="filterStatus" checked data-toggle="toggle" data-on="Show Done" data-off="Hide Done" data-onstyle="primary" type="checkbox">
-                    </a></li>
+                            <!-- Filters -->
+                            <input id="filterStatus" checked data-toggle="toggle" data-on="Show Done" data-off="Hide Done" data-onstyle="primary" type="checkbox">
+                        </div>
+                    </li>
                 </ul>
             </div>
         </div>
