@@ -60,6 +60,25 @@ def del_task():
     task_id = int(request.POST['taskId'])
     del task_list[task_id]
     dump_tasklist(task_list)
+
+@route('/migrateDatabase',method='POST')
+def migrate_database():
+    # Define default task
+    default_task = {"Description": None, 
+                    "Due Date": None, 
+                    "Status": None,
+                    "Title":None}
+    # Load task list
+    task_list = load_tasklist()
+    print(task_list)
+    migrated_task_list={}
+    # Loop over all tasks
+    for id_task, task in task_list.iteritems():
+        # Add missing keys with default content
+        migrated_task_list[id_task] = dict(default_task.items()+task.items())
+    # Dump new task list
+    dump_tasklist(migrated_task_list)
+    
     
 def load_tasklist():
     with open(os.path.join(source_dir,"data/todolist.yaml"), 'r') as stream:

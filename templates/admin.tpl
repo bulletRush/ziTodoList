@@ -35,8 +35,12 @@
 	$(document).ready(function() {
 
         // Migrate todolist button callback
-        $('#migrateTodoList').change(function() {
-            applyFilterStatus();
+        $('[name="migrateBtn"]').on('click',function(e) {
+        	// Set id of new task
+            $.ajax({
+                type: "POST",
+                url: "migrateDatabase"
+            });
         });
 	});
 </script>
@@ -77,8 +81,14 @@ body {
             </div>
         </div>
     </nav>
-
-
+    <div class="container-fluid">
+        <div class="row-fluid">        
+            <div class="col-md-4">
+                <label class="pull-left" for="migrateBtn">Migrate database</label>
+                <button name="migrateBtn" type="button" class="btn btn-primary pull-right">Migrate</button>
+            </div>
+        </div>
+    </div>
 
 </body>
 </html>
