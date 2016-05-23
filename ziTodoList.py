@@ -1,11 +1,18 @@
 import json
 import os.path
 
+import bottle
 from bottle import route, run, debug, template, error, request
 import yaml
 
 
+
+# Set globale
 source_dir = os.path.dirname(__file__)
+bottle.TEMPLATE_PATH.insert(0,os.path.join(source_dir,'templates'))
+
+
+
 
 # only needed when you run Bottle on mod_wsgi
 from bottle import default_app
@@ -88,6 +95,20 @@ def load_tasklist():
             print(exc)
     return task_list
 
+def load_yaml_data(database_name):
+    with open(os.path.join(source_dir,"data/"+database_name+".yaml"), 'r') as stream:
+        try:
+            data = yaml.load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+    print(data)
+    return data
+
+def dump_yaml_data(database_name, data):
+    dump_file = open(os.path.join(source_dir,"./data/"+database_name+".yaml"), 'w')
+    yaml.dump(data,dump_file, width = float("inf"))
+    
+
 def dump_tasklist(data):
     dump_file = open(os.path.join(source_dir,"./data/todolist.yaml"), 'w')
     yaml.dump(data,dump_file, width = float("inf"))
@@ -101,3 +122,5 @@ def error404(code):
     return 'Error 404 !'
 
 application = default_app()
+# Import plugins
+import pyDashBoard.crm
