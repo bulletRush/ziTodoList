@@ -77,7 +77,6 @@ def migrate_database():
                     "Title":None}
     # Load task list
     task_list = load_tasklist()
-    print(task_list)
     migrated_task_list={}
     # Loop over all tasks
     for id_task, task in task_list.iteritems():
@@ -101,7 +100,6 @@ def load_yaml_data(database_name):
             data = yaml.load(stream)
         except yaml.YAMLError as exc:
             print(exc)
-    print(data)
     return data
 
 def dump_yaml_data(database_name, data):

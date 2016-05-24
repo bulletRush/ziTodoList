@@ -39,8 +39,49 @@ $(document).ready(function() {
     });
 	
     bindEditButtons();	
-    bindDelButtons();   
+    bindDelButtons();  
+    bindAddButton();  
+    // Init date picker
+    $(function() {
+        $("[name='newContactDate']").datepicker({numberOfMonths: 2, dateFormat: "dd/mm/yy", showWeek: true});
+    });
+    // Reset new contact field
+    $("[name='newContactName']").val("");
+    $("[name='newContactDate']").val("");
+    $("[name='newContactComment']").val("");
 });
+
+// Handle add new contact button
+function bindAddButton(){
+    $(".newContactBtn").unbind('click');
+    $(".newContactBtn").on('click', function(e){        
+        var name = $("[name='newContactName']").val();
+        var date = $("[name='newContactDate']").val();
+        var comment = $("[name='newContactComment']").val();
+        // Remove contact history
+        $.ajax({
+            type : "POST",
+            url: "addContactHistory",
+            data : {name: name, date: date, comment: comment},
+            dataType : 'json',
+            contentType : 'application/json; charset=utf-8'
+        }).done(function(response) {
+            // Reset new contact field
+            $("[name='newContactName']").val("");
+            $("[name='newContactDate']").val("");
+            $("[name='newContactComment']").val("");
+            // Add contact
+            if ($("[data-name='"+name+"']").length){
+            	$("[data-name='"+name+"'] td:nth-child(2)").text(date);
+            	$("[data-name='"+name+"'] td:nth-child(3)").text(comment);
+            }else{
+                $("#allContactHistoryTable").append('<tr data-name="'+name+'"><td>'+name+'</td><td>'+date+'</td><td>'+comment+'</td><td><button type="button" class="btn btn-primary editBtn"><span class="glyphicon glyphicon-list"></span></button></td></tr>');
+                bindEditButtons();
+            }
+        });
+    });
+}
+
 
 // Handle remove event
 function bindDelButtons(){
@@ -144,19 +185,31 @@ body {
 
 
     <!-- Task table -->
-    <table id="taskTable" class="table table-striped">
+    <table id="allContactHistoryTable" class="table table-striped">
         <thead>
             <tr>
                 <th>Name</th>
                 <th>Last Contact Date</th>
+                <th>Comment</th>
                 <th></th>
             </tr>
+            <tr>
+                <td><input type="text" class="form-control" name="newContactName" placeholder="Enter name"></td>
+                <td><input type="text" class="form-control" name="newContactDate"></td>
+                <td><input type="text" class="form-control" name="newContactComment"></td>
+                <td>                    
+                    <button type="button" class="btn btn-success newContactBtn">
+                        <span class="glyphicon glyphicon-plus"></span>
+                    </button>
+                </td>                
+            </tr>            
         </thead>
         <tbody>
             %for name, last_contact in crm_data.iteritems():
             <tr data-name="{{name}}">
                 <td>{{name}}</td>
-                <td>{{last_contact[-1]["Date"]}}</td>               
+                <td>{{last_contact[-1]["Date"]}}</td>
+                <td>{{last_contact[-1]["Comment"]}}</td>                  
                 <td>
                     <button type="button" class="btn btn-primary editBtn">
                         <span class="glyphicon glyphicon-list"></span>
@@ -175,9 +228,8 @@ body {
                         <span aria-hidden="true">&times;</span>
                     </button>
                     <h4 class="modal-title" id="myModalLabel">Contact history for <span id='contactName'></span></h4>
-                </div>
-                <div class="modal-body">
-
+                </div>                
+                <div class="modal-body">                    
                     <table id="contactHistoryTable" class="table table-striped">
                         <thead>
                             <tr>
