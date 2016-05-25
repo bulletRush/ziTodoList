@@ -50,7 +50,7 @@
         });
         // Init date picker
         $(function() {
-       	    $("[name='taskDueDate']").datepicker({numberOfMonths: 2, dateFormat: "dd/mm/yy", showWeek: true});
+       	    $("[name='taskDueDate']").datepicker({numberOfMonths: 2, dateFormat: "dd/mm/yy", showWeek: true, firstDay: 1});
         });
 		
 		// Handle form submission with AJAX

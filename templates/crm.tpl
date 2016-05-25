@@ -43,7 +43,7 @@ $(document).ready(function() {
     bindAddButton();  
     // Init date picker
     $(function() {
-        $("[name='newContactDate']").datepicker({numberOfMonths: 2, dateFormat: "dd/mm/yy", showWeek: true});
+        $("[name='newContactDate']").datepicker({numberOfMonths: 2, dateFormat: "dd/mm/yy", showWeek: true, firstDay: 1});
     });
     // Reset new contact field
     $("[name='newContactName']").val("");
