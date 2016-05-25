@@ -33,9 +33,17 @@
 
 <script>
 $(document).ready(function() {
-	// Empty form in modal when modal closes
-    $('.modal').on('hidden.bs.modal', function(){
-        $('#contactHistoryTable > tbody').empty();
+	// Action when modal closes
+	$('.modal').on('hidden.bs.modal', function(){
+    	// Update all contact history
+        if ($('#contactHistoryTable > tbody').children().length == 0){
+        	// Remove contact
+        	var name = $('#contactName').text();
+        	$("[data-name='"+name+"']").remove();
+        }
+        // Empty form in modal when modal closes        
+    	$('#contactHistoryTable > tbody').empty();
+        
     });
 	
     bindEditButtons();	
@@ -99,7 +107,7 @@ function bindDelButtons(){
             contentType : 'application/json; charset=utf-8'
         }).done(function(response) {
             // Remove div
-            contactItem.empty();            
+            contactItem.remove();            
         });
     });
 }
