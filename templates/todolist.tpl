@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>ziTodoList</title>
+<title>表姐的待办事项</title>
 <!-- jQuery  - Minified version -->
 <script src="//code.jquery.com/jquery-2.2.1.js"></script>
 <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
@@ -66,15 +66,15 @@
 				dataType : 'json',
 				contentType : 'application/json; charset=utf-8'
 			}).done(function(response) {
-				var id = $("[name='taskId']").val();
+				var id = response['new_task']['id'];
 				// Close modal
 				$('#newTaskPopup').modal('toggle');
 				// Add task to tasklist
-				var title = response['new_task']['Title'];
-				var description = response['new_task']['Description'];
-				var dueDate = response['new_task']['Due Date'];
+				var title = response['new_task']['title'];
+				var description = response['new_task']['description'];
+				var dueDate = response['new_task']['due_date'];
 				// Define task
-				var task = '<tr data-taskStatus="'+response['new_task']['Status']+'" id="'+id+'"><td>'+id+'</td><td>'+title+'</td><td>'+description+'</td><td>'+dueDate+'</td>'+'<td><button type="button" class="btn btn-primary editBtn"><span class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-danger delBtn"><span class="glyphicon glyphicon-remove"></span></button></td>'+'</tr>';
+				var task = '<tr data-taskStatus="'+response['new_task']['status']+'" id="'+id+'"><td>'+id+'</td><td>'+title+'</td><td>'+description+'</td><td>'+dueDate+'</td>'+'<td><button type="button" class="btn btn-primary editBtn"><span class="glyphicon glyphicon-pencil"></span></button> <button type="button" class="btn btn-danger delBtn"><span class="glyphicon glyphicon-remove"></span></button></td>'+'</tr>';
 				if ($('#'+id).length)
                     // Existing task
                     $('#'+id).replaceWith(task);				    					
@@ -91,15 +91,6 @@
         });
 		// Handle new task event
 		$("#newTaskBtn").on('click', function(e){
-			// Set id of new task
-			$.ajax({
-				type: "GET",
-				url: "getNewId"
-			}).done(function(response){
-				var newId = response;
-				$("[name='taskId']").val(newId);
-			});
-			// Popup form
 			$('#newTaskPopup').modal('show');
 		});
 
@@ -140,15 +131,15 @@
             }).done(function(response) {
                 // Fill form with those informations
                 $("[name='taskId']").val(taskId);
-                $("[name='taskTitle']").val(response['task']['Title']);
-                $("[name='taskDescription']").text(response['task']['Description']);
-                $("[name='taskDueDate']").val(response['task']['Due Date']);
-                if (response['task']['Status'] == "Todo") {
+                $("[name='taskTitle']").val(response['title']);
+                $("[name='taskDescription']").text(response['description']);
+                $("[name='taskDueDate']").val(response['due_date']);
+                if (response['status'] == "Todo") {
                 	$("[name='taskStatus']").bootstrapToggle('on');
                 } else {
                 	$("[name='taskStatus']").bootstrapToggle('off')
                 }
-                $("[name='taskStatus']").prop("checked", response['task']['Status'] == "Todo")
+                $("[name='taskStatus']").prop("checked", response['Status'] == "Todo")
                 // Popup task form
                 $('#newTaskPopup').modal('show');
             });
@@ -186,7 +177,7 @@ body {
                 <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
                     <span class="sr-only">Toggle navigation</span> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">ziTodoList</a>
+                <a class="navbar-brand" href="#">表姐的待办事项</a>
             </div>
 
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -197,10 +188,11 @@ body {
                                 GoTo <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu">
-                                <li><a href="todolist">Todo List</a></li>
+                                <li><a href="todoList">待办事项</a></li>
+                                <li><a href="employeeList">员工管理</a></li>
                                 <li><a href="crm">CRM</a></li>
                                 <li role="separator" class="divider"></li>
-                                <li><a href="admin">Admin</a></li>
+                                <li><a href="admin">管理页面</a></li>
                             </ul>
                         </div>
                     </li>
@@ -211,10 +203,10 @@ body {
                         <div class='navbar-btn'>
                             <!-- Button trigger modal -->
                             <button id="newTaskBtn" type="button" class="btn btn-primary">
-                                <span class="glyphicon glyphicon glyphicon-plus"></span> New Task
+                                <span class="glyphicon glyphicon glyphicon-plus"></span> 添加待办事项
                             </button>
                             <!-- Filters -->
-                            <input id="filterStatus" checked data-toggle="toggle" data-on="Show Done" data-off="Hide Done" data-onstyle="primary" type="checkbox">
+                            <input id="filterStatus" checked data-toggle="toggle" data-on="显示已办事项" data-off="隐藏已办事项" data-onstyle="primary" type="checkbox">
                         </div>
                     </li>
                 </ul>
@@ -228,19 +220,19 @@ body {
         <thead>
             <tr>
                 <th>#</th>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Due Date</th>
+                <th>待办事项</th>
+                <th>说明</th>
+                <th>到期时间</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            %for id, task in task_list.iteritems():
-            <tr data-taskStatus="{{task['Status']}}" id="{{id}}">
-                <td>{{id}}</td>
-                <td>{{task['Title']}}</td>
-                <td>{{task['Description']}}</td>
-                <td>{{task['Due Date']}}</td>               
+            %for task in task_list:
+            <tr data-taskStatus="{{task.status}}" id="{{task.id}}">
+                <td>{{task.id}}</td>
+                <td>{{task.title}}</td>
+                <td>{{task.description}}</td>
+                <td>{{task.due_date}}</td>
                 <td>
                     <button type="button" class="btn btn-primary editBtn">
                         <span class="glyphicon glyphicon-pencil"></span>
@@ -262,7 +254,7 @@ body {
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
-                    <h4 class="modal-title" id="myModalLabel">New Task Definition</h4>
+                    <h4 class="modal-title" id="myModalLabel">编辑待办事项</h4>
                 </div>
                 <div class="modal-body">
                     <form id="newTaskForm">
@@ -270,25 +262,25 @@ body {
                             <input type="hidden" class="form-control" name="taskId">
                         </fieldset>
                         <fieldset class="form-group">
-                            <label for="taskTitle">Task title</label>
+                            <label for="taskTitle">待办事项</label>
                             <input type="text" class="form-control" name="taskTitle" placeholder="Enter task title">
                         </fieldset>
                         <fieldset class="form-group">
-                            <label for="taskDescription">Task description</label>
+                            <label for="taskDescription">说明</label>
                             <textarea class="form-control" name="taskDescription" rows="3"></textarea>
                         </fieldset>
                         <fieldset class="form-group">
                             <span style="float:left">
-                                <label for="taskDueDate">Due date</label>
+                                <label for="taskDueDate">到期时间</label>
                                 <input type="text" name="taskDueDate">
                             </span>        
                              <span style="float:right">                   
-                                <label for="taskStatus">Status</label>
+                                <label for="taskStatus">状态</label>
                                 <input name="taskStatus" checked data-toggle="toggle" data-width="100" data-on="ToDo" data-off="Done" data-onstyle="primary" data-offstyle="success" type="checkbox" value="Todo">
                             </span>
                         </fieldset>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">提交</button>
                     </form>
                 </div>
             </div>
@@ -296,5 +288,4 @@ body {
     </div>
 </body>
 </html>
-
 
